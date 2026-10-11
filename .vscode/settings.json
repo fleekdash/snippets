@@ -1,0 +1,8 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["snippets/*/fleekdash.json"],
+      "url": "./schema/fleekdash-manifest.schema.json"
+    }
+  ]
+}

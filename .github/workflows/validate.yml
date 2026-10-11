@@ -1,0 +1,52 @@
+name: Validate snippets
+
+on:
+  pull_request:
+    paths: ["snippets/**"]
+  push:
+    branches: [main]
+    paths: ["snippets/**"]
+
+jobs:
+  snippets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+
+      - name: PHP lint every snippet file
+        run: |
+          failed=0
+          while IFS= read -r -d '' file; do
+            php -l "$file" > /dev/null || { echo "::error file=$file::PHP syntax error"; failed=1; }
+          done < <(find snippets -name '*.php' -print0)
+          exit $failed
+
+      - name: Loose snippets must declare a Snippet Name header
+        run: |
+          failed=0
+          for file in snippets/*.php; do
+            [ -f "$file" ] || continue
+            grep -q 'Snippet Name\|Plugin Name' "$file" || { echo "::error file=$file::missing 'Snippet Name' file header"; failed=1; }
+          done
+          exit $failed
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install check-jsonschema
+        run: pip install check-jsonschema
+
+      - name: Validate package manifests
+        run: |
+          failed=0
+          for manifest in snippets/*/fleekdash.json; do
+            [ -f "$manifest" ] || continue
+            echo "== $manifest"
+            check-jsonschema --schemafile schema/fleekdash-manifest.schema.json "$manifest" || failed=1
+          done
+          exit $failed

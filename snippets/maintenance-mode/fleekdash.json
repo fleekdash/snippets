@@ -1,0 +1,19 @@
+{
+  "$schema": "../../schema/fleekdash-manifest.schema.json",
+  "kind": "snippet",
+  "id": "maintenance-mode",
+  "name": "Maintenance Mode",
+  "description": "Shows a 503 maintenance page to logged-out visitors; logged-in admins keep full access.",
+  "version": "1.0.0",
+  "author": "FleekDash",
+  "entry": "maintenance-mode.php",
+  "settings": {
+    "enabled": {
+      "type": "boolean",
+      "label": "Enable maintenance mode",
+      "description": "Logged-out visitors see a 503 maintenance page. Check REST/cron flows after enabling.",
+      "option_key": "fleekdash_mm_enabled",
+      "default": false
+    }
+  }
+}
